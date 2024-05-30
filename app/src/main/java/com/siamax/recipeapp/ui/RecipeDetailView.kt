@@ -1,3 +1,5 @@
+package com.siamax.recipeapp.ui
+
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
@@ -9,3 +11,4 @@ fun RecipeDetailView(recipeId: String) {
         text = recipeId,
     )
 }
+

@@ -1,6 +1,5 @@
 package com.siamax.recipeapp.ui
 
-import RecipeDetailView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
