@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun RecipeGeneratorScreen() {
     var ingredients by remember { mutableStateOf("") }
-    var recipe by remember { mutableStateOf("Generated recipe will appear here.") }
+    var recipes by remember { mutableStateOf(emptyList<String>()) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -67,7 +67,7 @@ fun RecipeGeneratorScreen() {
                             // Use coroutine scope to launch a coroutine
                             coroutineScope.launch {
                                 // Call generateRecipe within the coroutine scope
-                                recipe = generateRecipe(ingredients)
+                                recipes = generateRecipe(ingredients)
                             }
                         },
                         modifier = Modifier.weight(0.35f)
@@ -84,8 +84,12 @@ fun RecipeGeneratorScreen() {
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    SelectionContainer {
-                        Text(recipe)
+                    // Display each recipe separately
+                    recipes.forEach { recipe ->
+                        SelectionContainer {
+                            Text(recipe)
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
             }
@@ -93,55 +97,59 @@ fun RecipeGeneratorScreen() {
     )
 }
 
-suspend fun generateRecipe(ingredients: String): String {
+
+suspend fun generateRecipe(ingredient: String): List<String> {
     return withContext(Dispatchers.IO) {
-        val apiKey = "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"
-        val url = URL("https://api.openai.com/v1/completions")
+        val url = URL("https://www.themealdb.com/api/json/v1/1/search.php?s=$ingredient")
         val connection = url.openConnection() as HttpURLConnection
 
         try {
-            // Set request properties
-            connection.requestMethod = "POST"
-            connection.setRequestProperty("Content-Type", "application/json")
-            connection.setRequestProperty("Authorization", "Bearer $apiKey")
-            connection.doOutput = true
-
-            // Create request body
-            val requestBody = JSONObject().apply {
-                put("model", "gpt-3.5-turbo")  // Use the gpt-3.5-turbo model
-                put("prompt", "Generate a recipe using ingredients: $ingredients")
-                put("max_tokens", 500)
-                put("temperature", 0.7)  // Adjust the temperature if needed
-            }
-
-            // Write request body to output stream
-            val outputStream = connection.outputStream
-            outputStream.use { it.write(requestBody.toString().toByteArray()) }
-
-            // Read response
             val responseCode = connection.responseCode
-            val response = if (responseCode == HttpURLConnection.HTTP_OK) {
+            if (responseCode == HttpURLConnection.HTTP_OK) {
                 val inputStream = connection.inputStream
-                inputStream.bufferedReader().use { it.readText() }
-            } else {
-                val errorStream = connection.errorStream
-                val errorResponse = errorStream?.bufferedReader()?.use { it.readText() } ?: ""
-                "Error: $responseCode ${connection.responseMessage} $errorResponse"
-            }
+                val response = inputStream.bufferedReader().use { it.readText() }
 
-            // Parse response
-            return@withContext try {
                 val jsonResponse = JSONObject(response)
-                jsonResponse.getJSONArray("choices").getJSONObject(0).getString("text")
-            } catch (e: Exception) {
-                "Error: ${e.message} Response: $response"
-            }
+                val mealsArray = jsonResponse.getJSONArray("meals")
+                val recipes = mutableListOf<String>()
 
+                for (i in 0 until mealsArray.length()) {
+                    val meal = mealsArray.getJSONObject(i)
+                    val mealName = meal.getString("strMeal")
+                    val instructions = meal.getString("strInstructions")
+                    val ingredients = StringBuilder()
+                    val measures = StringBuilder()
+
+                    // Collecting ingredients and measures
+                    for (j in 1..20) {
+                        val ingredientKey = "strIngredient$j"
+                        val measureKey = "strMeasure$j"
+                        val ingredient = meal.getString(ingredientKey)
+                        val measure = meal.getString(measureKey)
+
+                        if (ingredient.isNotEmpty()) {
+                            ingredients.append("$ingredient: $measure\n")
+                        }
+                    }
+
+                    // Formatting the recipe
+                    val recipe = "$mealName\nIngredients:\n$ingredients\nInstructions:\n$instructions\n"
+                    recipes.add(recipe)
+                }
+
+                return@withContext recipes
+            } else {
+                return@withContext listOf("Error: $responseCode ${connection.responseMessage}")
+            }
+        } catch (e: Exception) {
+            return@withContext listOf("Error: ${e.message}")
         } finally {
             connection.disconnect()
         }
     }
 }
+
+
 
 
 
