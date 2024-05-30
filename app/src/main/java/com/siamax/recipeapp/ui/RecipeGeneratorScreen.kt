@@ -17,7 +17,11 @@ import kotlinx.coroutines.launch
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -51,20 +55,21 @@ fun RecipeGeneratorScreen() {
                         value = ingredients,
                         onValueChange = {
                             ingredients = it
-                            isError = ingredients.isEmpty() || ingredients.contains(" ")
+                            isError = ingredients.isEmpty()
                         },
                         modifier = Modifier.weight(0.8f),
-                        label = { Text("Enter ingredients") },
+                        label = { Text("Enter ingredients (comma-separated)") },
                         isError = isError,
                         singleLine = true
                     )
+
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Button(
                         onClick = {
                             coroutineScope.launch {
                                 isLoading = true
-                                recipes = generateRecipe(ingredients)
+                                recipes = generateRecipe(ingredients.trim())
                                 isLoading = false
                             }
                         },
@@ -84,13 +89,14 @@ fun RecipeGeneratorScreen() {
                 }
                 if (isError) {
                     Text(
-                        text = "Input cannot be empty or contain spaces",
+                        text = "Input cannot be empty",
                         color = Color.Red,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.align(Alignment.Start)
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -98,6 +104,18 @@ fun RecipeGeneratorScreen() {
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+
+                    Text(
+                        text = buildAnnotatedString {
+                            append("Enter ingredients to generate recipe\n")
+                            withStyle(style = SpanStyle(fontSize = 12.sp)) {
+                                append("E.g. chicken, rice, carrot")
+                            }
+                        },
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        textAlign = TextAlign.Center
+                    )
+
                     recipes.forEach { recipe ->
                         Card(
                             modifier = Modifier
