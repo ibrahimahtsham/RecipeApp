@@ -1,7 +1,9 @@
 package com.siamax.recipeapp.ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -52,30 +54,45 @@ fun RecipeDetailView(recipeId: String) {
                                         Modifier.padding(vertical = 8.dp)
                                                 .align(Alignment.CenterHorizontally)
                         )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
                         Text(
                                 text = it.instructions ?: "",
                                 textAlign = TextAlign.Start,
                                 fontSize = 16.sp,
                                 modifier = Modifier.padding(horizontal = 16.dp)
                         )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
                         Text(
                                 text = "Category: ${it.category}",
                                 textAlign = TextAlign.Start,
                                 fontSize = 16.sp,
                                 modifier = Modifier.padding(horizontal = 16.dp)
                         )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
                         Text(
                                 text = "Area: ${it.area}",
                                 textAlign = TextAlign.Start,
                                 fontSize = 16.sp,
                                 modifier = Modifier.padding(horizontal = 16.dp)
                         )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
                         Text(
                                 text = "Tags: ${it.tags}",
                                 textAlign = TextAlign.Start,
                                 fontSize = 16.sp,
                                 modifier = Modifier.padding(horizontal = 16.dp)
                         )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
                         it.ingredients.zip(it.measures).forEach { (ingredient, measure) ->
                             Text(
                                     text = "$ingredient: $measure",
