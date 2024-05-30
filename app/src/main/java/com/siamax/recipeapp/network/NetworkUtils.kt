@@ -6,7 +6,7 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
-data class Recipe(val name: String, val thumbnail: String)
+data class Recipe(val id: String, val name: String, val thumbnail: String)
 
 suspend fun generateRecipe(ingredient: String): List<Recipe> {
     return withContext(Dispatchers.IO) {
@@ -21,7 +21,7 @@ suspend fun generateRecipe(ingredient: String): List<Recipe> {
 
                 val jsonResponse = JSONObject(response)
                 if (jsonResponse.isNull("meals")) {
-                    return@withContext listOf(Recipe("No recipes found for the ingredient: $ingredient", ""))
+                    return@withContext listOf(Recipe("0", "No recipes found for the ingredient: $ingredient", ""))
                 }
 
                 val mealsArray = jsonResponse.getJSONArray("meals")
@@ -29,19 +29,21 @@ suspend fun generateRecipe(ingredient: String): List<Recipe> {
 
                 for (i in 0 until mealsArray.length()) {
                     val meal = mealsArray.getJSONObject(i)
+                    val mealId = meal.getString("idMeal")
                     val mealName = meal.getString("strMeal")
                     val mealThumbnail = meal.getString("strMealThumb")
-                    recipes.add(Recipe(mealName, mealThumbnail))
+                    recipes.add(Recipe(mealId, mealName, mealThumbnail))
                 }
 
                 return@withContext recipes
             } else {
-                return@withContext listOf(Recipe("Error: $responseCode ${connection.responseMessage}", ""))
+                return@withContext listOf(Recipe("0", "Error: $responseCode ${connection.responseMessage}", ""))
             }
         } catch (e: Exception) {
-            return@withContext listOf(Recipe("Something went wrong: ${e.message}", ""))
+            return@withContext listOf(Recipe("0", "Something went wrong: ${e.message}", ""))
         } finally {
             connection.disconnect()
         }
     }
 }
+

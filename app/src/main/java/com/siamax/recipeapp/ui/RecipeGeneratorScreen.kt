@@ -141,7 +141,7 @@ fun RecipeGeneratorScreen() {
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    text = recipe.name,
+                                    text = "ID: ${recipe.id}\nName: ${recipe.name}",
                                     modifier = Modifier.fillMaxWidth(),
                                     style = MaterialTheme.typography.bodyMedium.copy(
                                         fontWeight = FontWeight.Bold,
