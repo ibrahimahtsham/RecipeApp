@@ -92,49 +92,122 @@ fun RecipeDetailView(recipeId: String) {
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        Text(
-                                text = it.instructions ?: "",
-                                textAlign = TextAlign.Start,
-                                fontSize = 16.sp,
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                                text = "Category: ${it.category}",
-                                textAlign = TextAlign.Start,
-                                fontSize = 16.sp,
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                                text = "Area: ${it.area}",
-                                textAlign = TextAlign.Start,
-                                fontSize = 16.sp,
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                                text = "Tags: ${it.tags}",
-                                textAlign = TextAlign.Start,
-                                fontSize = 16.sp,
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        it.ingredients.zip(it.measures).forEach { (ingredient, measure) ->
+                        if (!it.instructions.isNullOrEmpty()) {
                             Text(
-                                    text = "$ingredient: $measure",
+                                    text = "Instructions:",
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                    text = it.instructions,
                                     textAlign = TextAlign.Start,
                                     fontSize = 16.sp,
                                     modifier = Modifier.padding(horizontal = 16.dp)
                             )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
+                        if (!it.category.isNullOrEmpty()) {
+                            Text(
+                                    text = "Category:",
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            Text(
+                                    text = it.category,
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
+                        if (!it.area.isNullOrEmpty()) {
+                            Text(
+                                    text = "Area:",
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            Text(
+                                    text = it.area,
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
+                        if (!it.drinkAlternate.isNullOrEmpty()) {
+                            Text(
+                                    text = "Drink Alternate:",
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            Text(
+                                    text = it.drinkAlternate,
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
+                        if (!it.tags.isNullOrEmpty()) {
+                            Text(
+                                    text = "Tags:",
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            Text(
+                                    text = it.tags,
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
+                        if (it.ingredients.isNotEmpty() && it.measures.isNotEmpty()) {
+                            Text(
+                                    text = "Ingredients & Measures:",
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            it.ingredients.zip(it.measures).forEach { (ingredient, measure) ->
+                                Text(
+                                        text = "$ingredient: $measure",
+                                        textAlign = TextAlign.Start,
+                                        fontSize = 16.sp,
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
 
                         recipe?.youtubeUrl?.let { url ->
@@ -143,7 +216,24 @@ fun RecipeDetailView(recipeId: String) {
                                     onClick = { offset -> uriHandler.openUri(url) },
                                     style =
                                             LocalTextStyle.current.copy(
-                                                    color = Color.Blue,
+                                                    color = Color(0xFF2196F3),
+                                                    fontSize = 16.sp,
+                                                    textDecoration = TextDecoration.Underline,
+                                                    fontWeight = FontWeight.Bold
+                                            ),
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
+                        recipe?.source?.let { url ->
+                            ClickableText(
+                                    text = AnnotatedString("Source: $url"),
+                                    onClick = { offset -> uriHandler.openUri(url) },
+                                    style =
+                                            LocalTextStyle.current.copy(
+                                                    color = Color(0xFF2196F3),
                                                     fontSize = 16.sp,
                                                     textDecoration = TextDecoration.Underline,
                                                     fontWeight = FontWeight.Bold
