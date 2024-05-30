@@ -69,7 +69,7 @@ fun RecipeGeneratorScreen() {
                         onClick = {
                             coroutineScope.launch {
                                 isLoading = true
-                                recipes = generateRecipe(ingredients.trim())
+                                recipes = generateRecipes(ingredients)
                                 isLoading = false
                             }
                         },
@@ -155,6 +155,18 @@ fun RecipeGeneratorScreen() {
             }
         }
     )
+}
+
+suspend fun generateRecipes(ingredients: String): List<Recipe> {
+    val ingredientList = ingredients.split(",").map { it.trim() }
+    val allRecipes = mutableListOf<Recipe>()
+
+    for (ingredient in ingredientList) {
+        val recipes = generateRecipe(ingredient)
+        allRecipes.addAll(recipes)
+    }
+
+    return allRecipes
 }
 
 suspend fun loadImage(url: String): Bitmap? {
