@@ -105,6 +105,7 @@ fun RecipeGeneratorScreen() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
+                    if (recipes.isEmpty()) {
                     Text(
                         text = buildAnnotatedString {
                             append("Enter ingredients to generate recipe\n")
@@ -114,7 +115,7 @@ fun RecipeGeneratorScreen() {
                         },
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         textAlign = TextAlign.Center
-                    )
+                    ) }
 
                     recipes.forEach { recipe ->
                         Card(
@@ -139,15 +140,27 @@ fun RecipeGeneratorScreen() {
                                             .height(180.dp)
                                     )
                                 }
+
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    text = "ID: ${recipe.id}\nName: ${recipe.name}",
+                                    text = "${recipe.id}\n${recipe.name}",
                                     modifier = Modifier.fillMaxWidth(),
                                     style = MaterialTheme.typography.bodyMedium.copy(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 20.sp
                                     )
                                 )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(
+                                    onClick = {
+                                        // Handle button click action, for example, navigate to recipe details screen
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth() // This modifier makes the button take the full width of its parent
+                                ) {
+                                    Text("View Recipe")
+                                }
                             }
                         }
                     }
