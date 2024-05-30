@@ -6,7 +6,9 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
-suspend fun generateRecipe(ingredient: String): List<String> {
+data class Recipe(val name: String, val thumbnail: String)
+
+suspend fun generateRecipe(ingredient: String): List<Recipe> {
     return withContext(Dispatchers.IO) {
         val url = URL("https://www.themealdb.com/api/json/v1/1/search.php?s=$ingredient")
         val connection = url.openConnection() as HttpURLConnection
@@ -19,24 +21,25 @@ suspend fun generateRecipe(ingredient: String): List<String> {
 
                 val jsonResponse = JSONObject(response)
                 if (jsonResponse.isNull("meals")) {
-                    return@withContext listOf("No recipes found for the ingredient: $ingredient")
+                    return@withContext listOf(Recipe("No recipes found for the ingredient: $ingredient", ""))
                 }
 
                 val mealsArray = jsonResponse.getJSONArray("meals")
-                val recipes = mutableListOf<String>()
+                val recipes = mutableListOf<Recipe>()
 
                 for (i in 0 until mealsArray.length()) {
                     val meal = mealsArray.getJSONObject(i)
                     val mealName = meal.getString("strMeal")
-                    recipes.add(mealName)
+                    val mealThumbnail = meal.getString("strMealThumb")
+                    recipes.add(Recipe(mealName, mealThumbnail))
                 }
 
                 return@withContext recipes
             } else {
-                return@withContext listOf("Error: $responseCode ${connection.responseMessage}")
+                return@withContext listOf(Recipe("Error: $responseCode ${connection.responseMessage}", ""))
             }
         } catch (e: Exception) {
-            return@withContext listOf("Something went wrong: ${e.message}")
+            return@withContext listOf(Recipe("Something went wrong: ${e.message}", ""))
         } finally {
             connection.disconnect()
         }

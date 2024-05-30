@@ -1,8 +1,8 @@
 package com.siamax.recipeapp.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -11,13 +11,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.siamax.recipeapp.network.Recipe
 import com.siamax.recipeapp.network.generateRecipe
 import kotlinx.coroutines.launch
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
 
 @Composable
 fun RecipeGeneratorScreen() {
     var ingredients by remember { mutableStateOf("") }
-    var recipes by remember { mutableStateOf(emptyList<String>()) }
+    var recipes by remember { mutableStateOf(emptyList<Recipe>()) }
     var isError by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -95,10 +105,30 @@ fun RecipeGeneratorScreen() {
                                 .padding(vertical = 8.dp),
                             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                         ) {
-                            SelectionContainer {
+                            Column(
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+                                LaunchedEffect(recipe.thumbnail) {
+                                    bitmap = loadImage(recipe.thumbnail)
+                                }
+                                bitmap?.let {
+                                    Image(
+                                        bitmap = it.asImageBitmap(),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(180.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    text = recipe,
-                                    modifier = Modifier.padding(16.dp)
+                                    text = recipe.name,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 20.sp
+                                    )
                                 )
                             }
                         }
@@ -107,6 +137,21 @@ fun RecipeGeneratorScreen() {
             }
         }
     )
+}
+
+suspend fun loadImage(url: String): Bitmap? {
+    return withContext(Dispatchers.IO) {
+        try {
+            val connection = URL(url).openConnection() as HttpURLConnection
+            connection.doInput = true
+            connection.connect()
+            val inputStream = connection.inputStream
+            BitmapFactory.decodeStream(inputStream)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 }
 
 @Preview(showBackground = true)
