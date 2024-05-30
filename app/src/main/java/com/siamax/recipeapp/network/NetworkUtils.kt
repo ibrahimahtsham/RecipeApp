@@ -6,6 +6,41 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
+data class RecipeDetail(val id: String, val name: String, val instructions: String?)
+suspend fun getRecipeDetail(recipeId: String): RecipeDetail? {
+    return withContext(Dispatchers.IO) {
+        val url = URL("https://www.themealdb.com/api/json/v1/1/lookup.php?i=$recipeId")
+        val connection = url.openConnection() as HttpURLConnection
+
+        try {
+            val responseCode = connection.responseCode
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                val inputStream = connection.inputStream
+                val response = inputStream.bufferedReader().use { it.readText() }
+
+                val jsonResponse = JSONObject(response)
+                val mealsArray = jsonResponse.getJSONArray("meals")
+                if (mealsArray.length() > 0) {
+                    val meal = mealsArray.getJSONObject(0)
+                    val mealId = meal.getString("idMeal")
+                    val mealName = meal.getString("strMeal")
+                    val mealInstructions = meal.getString("strInstructions")
+                    RecipeDetail(mealId, mealName, mealInstructions)
+                } else {
+                    null
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            connection.disconnect()
+        }
+    }
+}
+
 data class Recipe(val id: String, val name: String, val thumbnail: String)
 
 suspend fun generateRecipe(ingredient: String): List<Recipe> {
