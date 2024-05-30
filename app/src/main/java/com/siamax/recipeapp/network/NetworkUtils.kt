@@ -97,7 +97,7 @@ data class Recipe(val id: String, val name: String, val thumbnail: String)
 
 suspend fun generateRecipe(ingredient: String): List<Recipe> {
     return withContext(Dispatchers.IO) {
-        val url = URL("https://www.themealdb.com/api/json/v1/1/search.php?s=$ingredient")
+        val url = URL("https://www.themealdb.com/api/json/v1/1/filter.php?i=$ingredient")
         val connection = url.openConnection() as HttpURLConnection
 
         try {
