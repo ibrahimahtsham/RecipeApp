@@ -69,7 +69,7 @@ fun RecipeGeneratorScreen() {
                             isError = ingredients.isEmpty()
                         },
                         modifier = Modifier.weight(0.8f),
-                        label = { Text("Enter ingredients (comma-separated)") },
+                        label = { Text("Enter ingredients") },
                         isError = isError,
                         singleLine = true
                     )
