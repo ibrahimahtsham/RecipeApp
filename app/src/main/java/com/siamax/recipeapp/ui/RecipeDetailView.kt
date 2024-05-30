@@ -113,7 +113,7 @@ fun RecipeDetailView(recipeId: String) {
                             Spacer(modifier = Modifier.height(8.dp))
                         }
 
-                        if (!it.category.isNullOrEmpty()) {
+                        if (it.category != null) {
                             Text(
                                     text = "Category:",
                                     textAlign = TextAlign.Start,
@@ -132,7 +132,7 @@ fun RecipeDetailView(recipeId: String) {
                             Spacer(modifier = Modifier.height(8.dp))
                         }
 
-                        if (!it.area.isNullOrEmpty()) {
+                        if (it.area != null) {
                             Text(
                                     text = "Area:",
                                     textAlign = TextAlign.Start,
@@ -151,7 +151,7 @@ fun RecipeDetailView(recipeId: String) {
                             Spacer(modifier = Modifier.height(8.dp))
                         }
 
-                        if (!it.drinkAlternate.isNullOrEmpty()) {
+                        if (it.drinkAlternate != null) {
                             Text(
                                     text = "Drink Alternate:",
                                     textAlign = TextAlign.Start,
@@ -170,7 +170,7 @@ fun RecipeDetailView(recipeId: String) {
                             Spacer(modifier = Modifier.height(8.dp))
                         }
 
-                        if (!it.tags.isNullOrEmpty()) {
+                        if (it.tags != null) {
                             Text(
                                     text = "Tags:",
                                     textAlign = TextAlign.Start,
@@ -210,38 +210,43 @@ fun RecipeDetailView(recipeId: String) {
                             Spacer(modifier = Modifier.height(8.dp))
                         }
 
-                        recipe?.youtubeUrl?.let { url ->
-                            ClickableText(
-                                    text = AnnotatedString("YouTube URL: $url"),
-                                    onClick = { offset -> uriHandler.openUri(url) },
-                                    style =
-                                            LocalTextStyle.current.copy(
-                                                    color = Color(0xFF2196F3),
-                                                    fontSize = 16.sp,
-                                                    textDecoration = TextDecoration.Underline,
-                                                    fontWeight = FontWeight.Bold
-                                            ),
-                                    modifier = Modifier.padding(horizontal = 16.dp)
-                            )
+                        if (recipe?.youtubeUrl != null) {
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            recipe?.youtubeUrl?.let { url ->
+                                ClickableText(
+                                        text = AnnotatedString("YouTube URL: $url"),
+                                        onClick = { offset -> uriHandler.openUri(url) },
+                                        style =
+                                                LocalTextStyle.current.copy(
+                                                        color = Color(0xFF2196F3),
+                                                        fontSize = 16.sp,
+                                                        textDecoration = TextDecoration.Underline,
+                                                        fontWeight = FontWeight.Bold
+                                                ),
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
                         }
 
-                        recipe?.source?.let { url ->
-                            ClickableText(
-                                    text = AnnotatedString("Source: $url"),
-                                    onClick = { offset -> uriHandler.openUri(url) },
-                                    style =
-                                            LocalTextStyle.current.copy(
-                                                    color = Color(0xFF2196F3),
-                                                    fontSize = 16.sp,
-                                                    textDecoration = TextDecoration.Underline,
-                                                    fontWeight = FontWeight.Bold
-                                            ),
-                                    modifier = Modifier.padding(horizontal = 16.dp)
-                            )
+                        if (recipe?.source != null) {
+                            recipe?.source?.let { url ->
+                                ClickableText(
+                                        text = AnnotatedString("Source: $url"),
+                                        onClick = { offset -> uriHandler.openUri(url) },
+                                        style =
+                                                LocalTextStyle.current.copy(
+                                                        color = Color(0xFF2196F3),
+                                                        fontSize = 16.sp,
+                                                        textDecoration = TextDecoration.Underline,
+                                                        fontWeight = FontWeight.Bold
+                                                ),
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                )
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
                         }
                     }
                 }
