@@ -1,12 +1,24 @@
 package com.siamax.recipeapp.network
 
+import java.net.HttpURLConnection
+import java.net.URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import java.net.HttpURLConnection
-import java.net.URL
 
-data class RecipeDetail(val id: String, val name: String, val instructions: String?)
+data class RecipeDetail(
+        val id: String,
+        val name: String,
+        val instructions: String?,
+        val category: String?,
+        val area: String?,
+        val tags: String?,
+        val imageUrl: String?,
+        val youtubeUrl: String?,
+        val ingredients: List<String>,
+        val measures: List<String>
+)
+
 suspend fun getRecipeDetail(recipeId: String): RecipeDetail? {
     return withContext(Dispatchers.IO) {
         val url = URL("https://www.themealdb.com/api/json/v1/1/lookup.php?i=$recipeId")
@@ -25,7 +37,31 @@ suspend fun getRecipeDetail(recipeId: String): RecipeDetail? {
                     val mealId = meal.getString("idMeal")
                     val mealName = meal.getString("strMeal")
                     val mealInstructions = meal.getString("strInstructions")
-                    RecipeDetail(mealId, mealName, mealInstructions)
+                    val mealCategory = meal.getString("strCategory")
+                    val mealArea = meal.getString("strArea")
+                    val mealTags = meal.getString("strTags")
+                    val mealImageUrl = meal.getString("strMealThumb")
+                    val mealYoutubeUrl = meal.getString("strYoutube")
+                    val ingredients =
+                            (1..20)
+                                    .mapNotNull { i -> meal.optString("strIngredient$i", null) }
+                                    .filter { it.isNotBlank() }
+                    val measures =
+                            (1..20)
+                                    .mapNotNull { i -> meal.optString("strMeasure$i", null) }
+                                    .filter { it.isNotBlank() }
+                    RecipeDetail(
+                            mealId,
+                            mealName,
+                            mealInstructions,
+                            mealCategory,
+                            mealArea,
+                            mealTags,
+                            mealImageUrl,
+                            mealYoutubeUrl,
+                            ingredients,
+                            measures
+                    )
                 } else {
                     null
                 }
@@ -56,7 +92,9 @@ suspend fun generateRecipe(ingredient: String): List<Recipe> {
 
                 val jsonResponse = JSONObject(response)
                 if (jsonResponse.isNull("meals")) {
-                    return@withContext listOf(Recipe("0", "No recipes found for the ingredient: $ingredient", ""))
+                    return@withContext listOf(
+                            Recipe("0", "No recipes found for the ingredient: $ingredient", "")
+                    )
                 }
 
                 val mealsArray = jsonResponse.getJSONArray("meals")
@@ -72,7 +110,9 @@ suspend fun generateRecipe(ingredient: String): List<Recipe> {
 
                 return@withContext recipes
             } else {
-                return@withContext listOf(Recipe("0", "Error: $responseCode ${connection.responseMessage}", ""))
+                return@withContext listOf(
+                        Recipe("0", "Error: $responseCode ${connection.responseMessage}", "")
+                )
             }
         } catch (e: Exception) {
             return@withContext listOf(Recipe("0", "Something went wrong: ${e.message}", ""))
@@ -81,4 +121,3 @@ suspend fun generateRecipe(ingredient: String): List<Recipe> {
         }
     }
 }
-
