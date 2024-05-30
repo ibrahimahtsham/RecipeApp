@@ -16,7 +16,12 @@ data class RecipeDetail(
         val imageUrl: String?,
         val youtubeUrl: String?,
         val ingredients: List<String>,
-        val measures: List<String>
+        val measures: List<String>,
+        val drinkAlternate: String?,
+        val source: String?,
+        val imageSource: String?,
+        val creativeCommonsConfirmed: String?,
+        val dateModified: String?
 )
 
 suspend fun getRecipeDetail(recipeId: String): RecipeDetail? {
@@ -42,6 +47,12 @@ suspend fun getRecipeDetail(recipeId: String): RecipeDetail? {
                     val mealTags = meal.getString("strTags")
                     val mealImageUrl = meal.getString("strMealThumb")
                     val mealYoutubeUrl = meal.getString("strYoutube")
+                    val mealDrinkAlternate = meal.optString("strDrinkAlternate", null)
+                    val mealSource = meal.optString("strSource", null)
+                    val mealImageSource = meal.optString("strImageSource", null)
+                    val mealCreativeCommonsConfirmed =
+                            meal.optString("strCreativeCommonsConfirmed", null)
+                    val mealDateModified = meal.optString("dateModified", null)
                     val ingredients =
                             (1..20)
                                     .mapNotNull { i -> meal.optString("strIngredient$i", null) }
@@ -60,7 +71,12 @@ suspend fun getRecipeDetail(recipeId: String): RecipeDetail? {
                             mealImageUrl,
                             mealYoutubeUrl,
                             ingredients,
-                            measures
+                            measures,
+                            mealDrinkAlternate,
+                            mealSource,
+                            mealImageSource,
+                            mealCreativeCommonsConfirmed,
+                            mealDateModified
                     )
                 } else {
                     null
