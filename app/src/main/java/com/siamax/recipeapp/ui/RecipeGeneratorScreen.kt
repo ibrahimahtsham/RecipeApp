@@ -1,5 +1,6 @@
 package com.siamax.recipeapp.ui
 
+import RecipeDetailView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,6 +17,7 @@ import com.siamax.recipeapp.network.generateRecipe
 import kotlinx.coroutines.launch
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.activity.compose.BackHandler
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -30,6 +32,15 @@ import java.net.URL
 
 @Composable
 fun RecipeGeneratorScreen() {
+    var selectedRecipeId by remember { mutableStateOf<String?>(null) }
+
+    BackHandler(enabled = selectedRecipeId != null) {
+        selectedRecipeId = null // Reset selectedRecipeId when back button is pressed
+    }
+
+    if (selectedRecipeId != null) {
+        RecipeDetailView(recipeId = selectedRecipeId!!)
+    } else {
     var ingredients by remember { mutableStateOf("") }
     var recipes by remember { mutableStateOf(emptyList<Recipe>()) }
     var isError by remember { mutableStateOf(false) }
@@ -151,13 +162,15 @@ fun RecipeGeneratorScreen() {
                                     )
                                 )
 
-                                Spacer(modifier = Modifier.height(16.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
                                 Button(
                                     onClick = {
-                                        // Handle button click action, for example, navigate to recipe details screen
+                                        // Set selectedRecipeId to the desired recipeId when button is clicked
+                                        selectedRecipeId = recipe.id // Replace "recipeId" with the actual recipe ID
                                     },
                                     modifier = Modifier
                                         .fillMaxWidth() // This modifier makes the button take the full width of its parent
+
                                 ) {
                                     Text("View Recipe")
                                 }
@@ -169,6 +182,8 @@ fun RecipeGeneratorScreen() {
         }
     )
 }
+}
+
 
 suspend fun generateRecipes(ingredients: String): List<Recipe> {
     val ingredientList = ingredients.split(",").map { it.trim() }
